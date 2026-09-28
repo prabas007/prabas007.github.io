@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Praneel Baskar</title>
+<meta name="description" content="Electrical engineer at UIUC working on robotics, computer vision, and embedded systems.">
+<meta property="og:title" content="Praneel Baskar">
+<meta property="og:description" content="Electrical engineer at UIUC working on robotics, computer vision, and embedded systems.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⬢</text></svg>">
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#top" class="nav-name">Praneel Baskar</a>
+    <div class="nav-links">
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="icon-btn" id="theme-btn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+  </div>
+</nav>
+
+<main class="wrap" id="top">
+
+  <header>
+    <div class="hero">
+      <div class="hero-text">
+        <h1 id="c-name"></h1>
+        <p class="tagline" id="c-tagline"></p>
+        <p class="status" id="c-status"></p>
+        <p class="intro" id="c-intro"></p>
+        <div class="links" id="c-links"></div>
+      </div>
+      <div id="c-photo"></div>
+    </div>
+  </header>
+
+  <section id="projects">
+    <div class="sec-head">
+      <h2>Selected Projects</h2>
+      <span class="sec-count" id="proj-count"></span>
+    </div>
+    <div class="projects" id="c-projects"></div>
+  </section>
+
+  <section id="experience">
+    <div class="sec-head"><h2>Experience</h2></div>
+    <div class="exp" id="c-exp"></div>
+  </section>
+
+  <section id="skills">
+    <div class="sec-head"><h2>Skills</h2></div>
+    <div class="skills" id="c-skills"></div>
+  </section>
+
+  <section id="about">
+    <div class="sec-head"><h2>About</h2></div>
+    <p class="about" id="c-about"></p>
+  </section>
+
+  <footer id="contact">
+    <p id="c-footer"></p>
+    <div class="footer-links" id="c-footer-links"></div>
+  </footer>
+
+</main>
+
+<div class="cmdk-back" id="cmdk-back">
+  <div class="cmdk">
+    <input id="cmdk-input" placeholder="Jump to..." autocomplete="off" spellcheck="false">
+    <div class="cmdk-list" id="cmdk-list"></div>
+  </div>
+</div>
+
+<script src="js/content.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
