@@ -65,6 +65,7 @@ function renderHome() {
         ${p.domain ? `<div class="domain">${esc(p.domain)}</div>` : ''}
         <div class="card-top">
           <span class="card-title">${esc(p.title)}</span>
+          ${p.wip ? '<span class="wip">In progress</span>' : ''}
           <span class="card-year">${esc(p.year)}</span>
         </div>
         <div class="card-sub">${esc(p.subtitle)}</div>
@@ -123,7 +124,7 @@ function renderProject() {
     <a class="back" href="index.html#projects">&larr; all projects</a>
     <div class="p-head">
       ${p.domain ? `<div class="domain">${esc(p.domain)}</div>` : ''}
-      <h1>${esc(p.title)}</h1>
+      <h1>${esc(p.title)}${p.wip ? ' <span class="wip">In progress</span>' : ''}</h1>
       <div class="p-sub">${esc(p.subtitle)}</div>
       <div class="p-year">${esc(p.year)}</div>
       ${p.award ? `<div class="award">${esc(p.award)}</div>` : ''}

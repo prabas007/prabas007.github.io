@@ -33,140 +33,53 @@ const CONTENT = {
       id: "visual-agent",
       domain: "Software · ML",
       title: "Visual Agent",
-      subtitle: "Agentic computer-vision system",
-      year: "2026",
-      // One line on the card. Make it concrete.
-      hook: "A webcam agent that watches for patterns over time, not single frames, and decides on its own when to intervene.",
-      stack: ["Python", "LangGraph", "Qwen2-VL-7B", "OpenCV", "PyTorch", "Flask", "SQLite"],
-      // [PLACEHOLDER] 5-10s screen recording as a .gif or .mp4 in assets/
-      media: "assets/visual-agent.gif",
-      repo: "",                            // [PLACEHOLDER] repo URL, or leave "" to hide the link
+      subtitle: "Webcam agent running a 7B vision model on a remote GPU",
+      year: "May – June 2026",
+      hook: "A webcam agent that captions what it sees with Qwen2-VL-7B on a remote H100 and speaks a desktop alert when it catches you on your phone or slouching.",
+      stack: ["Python", "OpenCV", "Qwen2-VL-7B", "PyTorch", "LangGraph", "Flask", "ngrok", "SQLite"],
+      media: "assets/visual-agent.gif",          // [PLACEHOLDER]
+      repo: "",                                   // [PLACEHOLDER] if you make it public
 
-      problem: "Most computer-vision tools fire on a single frame. They see a phone in your hand and alert immediately, which means constant false positives and no sense of context. I wanted a system that understood behavior across time: not 'you are slouching' but 'you have been slouching for ten minutes.'",
+      problem: "I wanted a 7B vision-language model watching my webcam in a loop, but the H100 I had access to sat behind a university Jupyter service with no SSH and no public port, and VS Code remote returned a 403. The second problem was the model itself: it returns free-form English, not labels, so every downstream decision had to be made from whatever wording came back.",
 
-      built: "A continuous perceive, remember, reason, act loop. OpenCV captures a frame every five seconds and sends it to a vision-language model for captioning. Captions land in a timestamped store that the agent can query by time window. A reasoning step then looks at the current caption plus recent history and decides whether anything is worth acting on, and which tool to use.",
+      built: "A four-node LangGraph loop running on my Mac. OpenCV grabs a frame, encodes it as base64 JPEG, and POSTs it to a Flask endpoint on the H100 through an ngrok tunnel. The server holds Qwen2-VL-7B-Instruct in fp16, loaded once at startup, and returns a caption. Captions go into SQLite with timestamps, and a reasoning node matches the caption against phone and slouch conditions with negation guards before firing a macOS notification and text-to-speech. Only the vision call leaves the laptop, so the tunnel carries one small request per cycle and the server side is a notebook I can paste into a fresh session.",
 
-      // Architecture diagram: list of nodes rendered as a flow.
       architecture: [
-        "capture_frame",
-        "get_caption",
-        "check_memory",
+        "capture frame",
+        "caption (remote H100)",
+        "store + load memory",
         "reason",
-        "act"
+        "act",
+        "sleep 5s, loop"
       ],
-      architectureNote: "Implemented as an explicit LangGraph state machine. The reason node uses an LLM rather than keyword matching, so it can weigh caption text against memory context instead of pattern-matching strings.",
+      architectureNote: "The prompt and the reasoning node are deliberately coupled. The prompt instructs the model to use the literal words 'slouching' or 'upright' so the reasoning step has something dependable to match on. That is a constraint, not elegance: matching on free text is brittle, and the prompt is what makes it survivable.",
 
       results: [
-        { label: "Build time", value: "3 days", note: "against a 7-day plan" },
-        { label: "Frame interval", value: "~5s", note: "continuous capture loop" },
-        { label: "Model", value: "Qwen2-VL-7B", note: "fp16 on remote H100" }
-      ],
-
-      // The strongest section. What actually broke.
-      challenges: [
-        {
-          title: "University firewall blocked the GPU",
-          body: "The model needed an H100 that I could not reach directly from my laptop. I put Flask on the GPU box in a background thread and exposed it through an ngrok tunnel, then streamed base64-encoded JPEG frames over HTTP. The model loads once at server startup rather than per request, so inference stays fast."
-        },
-        {
-          title: "False-positive phone detection",
-          body: "The captioner would describe a frame as 'not holding a phone' and my downstream check matched on the substring 'holding a phone.' Added a negation guard in the reasoning step so the agent reads the caption semantically instead of by keyword."
-        },
-        {
-          title: "Posture detection was unreliable",
-          body: "Generic prompts produced vague captions that could not distinguish good posture from bad. Rewrote the prompt to ask about specific anatomical cues, spine curve and shoulder position, which made captions consistent enough to reason over."
-        }
-      ],
-
-      // Things you deliberately did not do. Shows judgment.
-      scope: "Pose estimation via MediaPipe, a vector database for long-term memory, and a multi-agent split were all scoped and deliberately deferred. The single-agent loop was enough to prove the idea."
-    },
-
-    {
-      id: "bracket-bot",
-      domain: "Robotics · ML",
-      title: "Bracket Bot",
-      subtitle: "Self-supervised world model + imitation learning · UIUC SIGRobotics",
-      year: "Dec 2025 – Present",
-      hook: "Teaching a robot to imagine what it will see next, so it can plan manipulation without ground-truth labels.",
-      stack: ["PyTorch", "CUDA", "SO-100 arms", "AprilTag", "InfoNCE"],
-      media: "assets/bracket-bot.gif",     // [PLACEHOLDER]
-      repo: "",                            // [PLACEHOLDER]
-
-      problem: "Robot manipulation planning usually needs labeled state data: where the objects are, what the joint angles should be, what counts as success. That labeling does not scale. The alternative is to let the robot learn a compressed model of its own visual world and plan inside that representation instead.",
-
-      built: "A convolutional encoder-decoder with residual blocks that compresses 480x640 camera frames into a 4x60x80 latent space, trained with InfoNCE contrastive loss to keep the representation from collapsing. On top of that, a temporal dynamics MLP takes the current latent state plus a 6-DOF control input and predicts the next latent state, which lets the robot roll out imagined trajectories before committing to a motion.",
-
-      architecture: [
-        "camera frames",
-        "conv encoder",
-        "latent 4x60x80",
-        "dynamics MLP",
-        "predicted next state"
-      ],
-      architectureNote: "Contrastive loss structures the embedding space so that visually similar states sit close together. Without it the encoder collapses to a constant and the dynamics model learns nothing.",
-
-      results: [
-        { label: "Input", value: "480x640", note: "raw camera frames" },
-        { label: "Latent", value: "4x60x80", note: "compressed representation" },
-        { label: "Control", value: "6-DOF", note: "conditioning input" }
+        { label: "Cycle time", value: "7.5s", note: "median between stored captions, derived from DB timestamps" },
+        { label: "Captions logged", value: "84", note: "across two development sessions" },
+        { label: "Phone captions that deny a phone", value: "58 of 78", note: "why the negation guard exists" }
       ],
 
       challenges: [
         {
-          title: "Representational collapse",
-          body: "[PLACEHOLDER — describe what you actually saw. Early training drove all latents toward the same vector, so reconstruction looked fine but the dynamics model had no signal to learn from. InfoNCE contrastive loss fixed it by forcing distinct states apart in the embedding space.]"
+          title: "58 of 78 captions said 'phone' while denying there was one",
+          body: "The prompt asks the model to note whether the person is holding a phone, so almost every caption contains the word, usually inside a sentence like 'they are not holding or looking at a phone.' A plain substring match alerted on most frames. I pulled the stored captions out of SQLite and counted: 58 of the 78 containing 'phone' were explicit denials. That number is what told me a negation guard was mandatory rather than nice to have."
         },
         {
-          title: "Imitation learning on physical arms",
-          body: "[PLACEHOLDER — currently training a policy on teleoperated demonstrations to fold cloth with dual SO-100 arms. Write what you have hit so far: demonstration quality, distribution shift, compounding error, whatever is actually the hard part.]"
+          title: "The fix for that bug silently disabled the other alert",
+          body: "My first negation guard was a single shared condition covering both phone and slouch checks. So a caption reading 'slouched posture. They are not holding a phone' matched the guard and fired nothing at all, hiding a real slouch alert behind an unrelated denial. I split the reasoning node into independent checks that append to a list, changed the action state from a single string to a list, and gave the slouch check its own guards. The phone guard is still a coarse substring test, and I know it: any caption containing 'no' suppresses that alert."
+        },
+        {
+          title: "Getting to the H100 at all",
+          body: "VS Code remote was blocked with a 403 and there was no SSH. I tried localtunnel, then settled on Flask behind a pyngrok tunnel. The blocker was that Flask's app.run() holds the notebook cell, so the tunnel cell never executed. Starting Flask in a background thread fixed it. I verified each stage with a /ping route curled from the Mac before adding the actual captioning endpoint."
+        },
+        {
+          title: "GraphRecursionError after about six loops",
+          body: "The first full run stopped with a recursion limit of 25. Each pass runs four nodes, so the default budget allows roughly six cycles before LangGraph considers it runaway. Raising the limit to 100 got me to about 25 loops, around three minutes. That is a ceiling moved, not removed. The loop probably belongs outside the graph entirely, with the graph handling one pass."
         }
       ],
 
-      scope: "Ongoing. The world model side is working; the imitation-learning policy for cloth folding is in progress this semester."
-    },
-
-    {
-      id: "trainify",
-      domain: "Software · ML",
-      title: "On-Device Pose Pipeline",
-      subtitle: "Computer Vision Intern · Trainify Labs",
-      year: "May 2026 – Present",
-      hook: "Shipped a basketball form-tracking model onto the Apple Neural Engine, then fixed the tracking bug that made it unusable with more than one person on court.",
-      stack: ["PyTorch", "YOLO", "CoreML", "Apple Neural Engine", "OpenCV"],
-      media: "assets/trainify.gif",        // [PLACEHOLDER]
-      repo: "",                            // private, likely leave empty
-
-      problem: "A phone camera watching a basketball player needs to track shots and body form in real time, on device, with no server round trip. Two hard constraints: the model has to be small and fast enough for the Neural Engine, and it has to hold onto the right person when other people walk through frame.",
-
-      built: "An end-to-end training pipeline on rented cloud GPUs that fine-tunes a YOLO-based pose-detection model, then converts and deploys it through CoreML for real-time inference on the Apple Neural Engine. Downstream, a trajectory state machine turns raw pose output into live form feedback in the app.",
-
-      architecture: [
-        "camera feed",
-        "YOLO pose model",
-        "CoreML / ANE",
-        "trajectory state machine",
-        "live user feedback"
-      ],
-      architectureNote: "Everything runs on device. No network round trip, which is what makes the feedback feel instant.",
-
-      results: [
-        { label: "Inference", value: "On-device", note: "Apple Neural Engine" },
-        { label: "Tracking", value: "Fixed", note: "stable through occlusion" }
-      ],
-
-      challenges: [
-        {
-          title: "Multi-person tracking identity swap",
-          body: "The tracker picked the highest-confidence person every single frame instead of maintaining identity, so whenever a second person entered the frame the system silently switched targets mid-shot. I replaced confidence-based matching with appearance-based re-identification: on first lock the system stores a torso color histogram for the tracked person, then matches against that histogram on subsequent frames rather than raw detection confidence. Tracking stayed stable through occlusion and through new people entering frame, validated against clips that had previously failed."
-        },
-        {
-          title: "Evaluating on gameplay, not benchmarks",
-          body: "[PLACEHOLDER — you mentioned tying evaluation metrics to real gameplay performance rather than standard training metrics, and running comparative accuracy analysis across camera angles. Write a few lines on what that looked like.]"
-        }
-      ],
-
-      scope: ""
+      scope: "Solo project, built over about a week. Working: capture, remote captioning, SQLite caption log, the LangGraph loop, and both alert paths. Not built, despite being scoped: LLM-based reasoning (the reasoning node is keyword matching), pattern detection over time (memory is stored and loaded into state but the reasoning step only reads the current caption), MediaPipe pose, and vector-database memory. There is no retry handling, so a failed request or an unreadable frame stops the loop."
     },
 
     {
@@ -290,6 +203,34 @@ const CONTENT = {
         { src: "assets/linkcare-award.jpg", caption: "[PLACEHOLDER] Accepting the Actian VectorAI award at HackIllinois 2026" },
         { src: "assets/linkcare-ui.jpg",    caption: "[PLACEHOLDER] Peer matching view" }
       ]
+    },
+
+    {
+      id: "bracket-bot",
+      domain: "Robotics · ML",
+      wip: true,
+      title: "Bracket Bot",
+      subtitle: "Robot learning · UIUC ACM SIGRobotics",
+      year: "Dec 2025 – Present",
+      hook: "Team project on visual world models for robot manipulation. I am currently working on the imitation-learning side, collecting teleoperated demonstrations for dual-arm cloth folding.",
+      stack: ["PyTorch", "CUDA", "SO-100 arms", "Contrastive Learning"],
+      media: "assets/bracket-bot.gif",          // [PLACEHOLDER]
+      repo: "",
+
+      problem: "Manipulation planning usually depends on labeled state data: where objects are, what the joint angles should be, what counts as success. Labeling that by hand does not scale. The alternative is to let the robot learn a compressed visual representation of its own environment and plan inside that representation instead.",
+
+      built: "The group's world model compresses camera frames into a latent space using a convolutional encoder-decoder, with a contrastive objective that keeps the representation from collapsing. A separate dynamics model predicts the next latent state from the current one plus a control input, so future visual states can be rolled out before committing to a motion. I am working on the imitation-learning half: running teleoperated demonstrations on dual SO-100 arms to collect data for a cloth-folding policy.",
+
+      architecture: [
+        "camera frames",
+        "encoder",
+        "latent representation",
+        "dynamics model",
+        "predicted next state"
+      ],
+      architectureNote: "The contrastive objective is what makes the rest viable. Without it the encoder finds a degenerate solution, mapping every frame to the same point, which satisfies reconstruction while leaving the dynamics model with nothing to learn from.",
+
+      scope: "Ongoing group project at UIUC ACM SIGRobotics. The world model is a collaborative effort across several contributors. My current focus is teleoperated data collection on the SO-100 arms and the cloth-folding policy, which is still in progress."
     }
   ],
 
@@ -300,8 +241,8 @@ const CONTENT = {
       role: "Computer Vision Intern",
       dates: "May 2026 – Present",
       bullets: [
-        "Built an end-to-end training pipeline on cloud GPUs and deployed a pose-detection model through CoreML for real-time on-device inference.",
-        "Diagnosed and fixed a multi-person tracking failure by replacing confidence-based identity matching with appearance-based re-identification."
+        "Work on the on-device computer-vision pipeline for an iOS sports-training app, including model conversion for real-time inference on the Apple Neural Engine.",
+        "Investigated multi-person tracking accuracy, benchmarking several identity-matching approaches against recorded footage and documenting which ones measurably improved results."
       ]
     },
     {
