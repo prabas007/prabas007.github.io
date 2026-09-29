@@ -32,59 +32,6 @@ const CONTENT = {
   /* Order here = order on the page. Each gets a card + a detail page.       */
   projects: [
     {
-      id: "visual-agent",
-      domain: "Software · ML",
-      title: "Visual Agent",
-      subtitle: "Webcam agent running a 7B vision model on a remote GPU",
-      year: "May – June 2026",
-      hook: "A webcam agent that captions what it sees with Qwen2-VL-7B on a remote H100 and speaks a desktop alert when it catches you on your phone or slouching.",
-      stack: ["Python", "OpenCV", "Qwen2-VL-7B", "PyTorch", "LangGraph", "Flask", "ngrok", "SQLite"],
-      media: "assets/visual-agent.gif",
-      repo: "https://github.com/prabas007/VisualAgent",
-
-      problem: "I wanted a 7B vision-language model watching my webcam in a loop, but the H100 I had access to sat behind a university Jupyter service with no SSH and no public port, and VS Code remote returned a 403. The second problem was the model itself: it returns free-form English, not labels, so every downstream decision had to be made from whatever wording came back.",
-
-      built: "A four-node LangGraph loop running on my Mac. OpenCV grabs a frame, encodes it as base64 JPEG, and POSTs it to a Flask endpoint on the H100 through an ngrok tunnel. The server holds Qwen2-VL-7B-Instruct in fp16, loaded once at startup, and returns a caption. Captions go into SQLite with timestamps, and a reasoning node matches the caption against phone and slouch conditions with negation guards before firing a macOS notification and text-to-speech. Only the vision call leaves the laptop, so the tunnel carries one small request per cycle and the server side is a notebook I can paste into a fresh session.",
-
-      architecture: [
-        "capture frame",
-        "caption (remote H100)",
-        "store + load memory",
-        "reason",
-        "act",
-        "sleep 5s, loop"
-      ],
-      architectureNote: "The prompt and the reasoning node are deliberately coupled. The prompt instructs the model to use the literal words 'slouching' or 'upright' so the reasoning step has something dependable to match on. That is a constraint, not elegance: matching on free text is brittle, and the prompt is what makes it survivable.",
-
-      results: [
-        { label: "Cycle time", value: "7.5s", note: "median between stored captions, derived from DB timestamps" },
-        { label: "Captions logged", value: "84", note: "across two development sessions" },
-        { label: "Phone captions that deny a phone", value: "58 of 78", note: "why the negation guard exists" }
-      ],
-
-      challenges: [
-        {
-          title: "58 of 78 captions said 'phone' while denying there was one",
-          body: "The prompt asks the model to note whether the person is holding a phone, so almost every caption contains the word, usually inside a sentence like 'they are not holding or looking at a phone.' A plain substring match alerted on most frames. I pulled the stored captions out of SQLite and counted: 58 of the 78 containing 'phone' were explicit denials. That number is what told me a negation guard was mandatory rather than nice to have."
-        },
-        {
-          title: "The fix for that bug silently disabled the other alert",
-          body: "My first negation guard was a single shared condition covering both phone and slouch checks. So a caption reading 'slouched posture. They are not holding a phone' matched the guard and fired nothing at all, hiding a real slouch alert behind an unrelated denial. I split the reasoning node into independent checks that append to a list, changed the action state from a single string to a list, and gave the slouch check its own guards. The phone guard is still a coarse substring test, and I know it: any caption containing 'no' suppresses that alert."
-        },
-        {
-          title: "Getting to the H100 at all",
-          body: "VS Code remote was blocked with a 403 and there was no SSH. I tried localtunnel, then settled on Flask behind a pyngrok tunnel. The blocker was that Flask's app.run() holds the notebook cell, so the tunnel cell never executed. Starting Flask in a background thread fixed it. I verified each stage with a /ping route curled from the Mac before adding the actual captioning endpoint."
-        },
-        {
-          title: "GraphRecursionError after about six loops",
-          body: "The first full run stopped with a recursion limit of 25. Each pass runs four nodes, so the default budget allows roughly six cycles before LangGraph considers it runaway. Raising the limit to 100 got me to about 25 loops, around three minutes. That is a ceiling moved, not removed. The loop probably belongs outside the graph entirely, with the graph handling one pass."
-        }
-      ],
-
-      scope: "Solo project, built over about a week. Working: capture, remote captioning, SQLite caption log, the LangGraph loop, and both alert paths. Not built, despite being scoped: LLM-based reasoning (the reasoning node is keyword matching), pattern detection over time (memory is stored and loaded into state but the reasoning step only reads the current caption), MediaPipe pose, and vector-database memory. There is no retry handling, so a failed request or an unreadable frame stops the loop."
-    },
-
-    {
       id: "drivesafe",
       domain: "Hardware · Embedded",
       title: "DriveSafe",
@@ -147,6 +94,59 @@ const CONTENT = {
       ],
 
       scope: "Course project for ECE 145 with Soham and Sanjit. I owned the FSR hand-detection subcircuit, the tilt detection design, and shared work on the ultrasonic path and final integration. Known limits: wiring organization made debugging harder than it needed to be, and the intended 3D-printed housing was dropped when the ordered wheel never arrived."
+    },
+
+    {
+      id: "visual-agent",
+      domain: "Software · ML",
+      title: "Visual Agent",
+      subtitle: "Webcam agent running a 7B vision model on a remote GPU",
+      year: "May – June 2026",
+      hook: "A webcam agent that captions what it sees with Qwen2-VL-7B on a remote H100 and speaks a desktop alert when it catches you on your phone or slouching.",
+      stack: ["Python", "OpenCV", "Qwen2-VL-7B", "PyTorch", "LangGraph", "Flask", "ngrok", "SQLite"],
+      media: "assets/visual-agent.gif",
+      repo: "https://github.com/prabas007/VisualAgent",
+
+      problem: "I wanted a 7B vision-language model watching my webcam in a loop, but the H100 I had access to sat behind a university Jupyter service with no SSH and no public port, and VS Code remote returned a 403. The second problem was the model itself: it returns free-form English, not labels, so every downstream decision had to be made from whatever wording came back.",
+
+      built: "A four-node LangGraph loop running on my Mac. OpenCV grabs a frame, encodes it as base64 JPEG, and POSTs it to a Flask endpoint on the H100 through an ngrok tunnel. The server holds Qwen2-VL-7B-Instruct in fp16, loaded once at startup, and returns a caption. Captions go into SQLite with timestamps, and a reasoning node matches the caption against phone and slouch conditions with negation guards before firing a macOS notification and text-to-speech. Only the vision call leaves the laptop, so the tunnel carries one small request per cycle and the server side is a notebook I can paste into a fresh session.",
+
+      architecture: [
+        "capture frame",
+        "caption (remote H100)",
+        "store + load memory",
+        "reason",
+        "act",
+        "sleep 5s, loop"
+      ],
+      architectureNote: "The prompt and the reasoning node are deliberately coupled. The prompt instructs the model to use the literal words 'slouching' or 'upright' so the reasoning step has something dependable to match on. That is a constraint, not elegance: matching on free text is brittle, and the prompt is what makes it survivable.",
+
+      results: [
+        { label: "Cycle time", value: "7.5s", note: "median between stored captions, derived from DB timestamps" },
+        { label: "Captions logged", value: "84", note: "across two development sessions" },
+        { label: "Phone captions that deny a phone", value: "58 of 78", note: "why the negation guard exists" }
+      ],
+
+      challenges: [
+        {
+          title: "58 of 78 captions said 'phone' while denying there was one",
+          body: "The prompt asks the model to note whether the person is holding a phone, so almost every caption contains the word, usually inside a sentence like 'they are not holding or looking at a phone.' A plain substring match alerted on most frames. I pulled the stored captions out of SQLite and counted: 58 of the 78 containing 'phone' were explicit denials. That number is what told me a negation guard was mandatory rather than nice to have."
+        },
+        {
+          title: "The fix for that bug silently disabled the other alert",
+          body: "My first negation guard was a single shared condition covering both phone and slouch checks. So a caption reading 'slouched posture. They are not holding a phone' matched the guard and fired nothing at all, hiding a real slouch alert behind an unrelated denial. I split the reasoning node into independent checks that append to a list, changed the action state from a single string to a list, and gave the slouch check its own guards. The phone guard is still a coarse substring test, and I know it: any caption containing 'no' suppresses that alert."
+        },
+        {
+          title: "Getting to the H100 at all",
+          body: "VS Code remote was blocked with a 403 and there was no SSH. I tried localtunnel, then settled on Flask behind a pyngrok tunnel. The blocker was that Flask's app.run() holds the notebook cell, so the tunnel cell never executed. Starting Flask in a background thread fixed it. I verified each stage with a /ping route curled from the Mac before adding the actual captioning endpoint."
+        },
+        {
+          title: "GraphRecursionError after about six loops",
+          body: "The first full run stopped with a recursion limit of 25. Each pass runs four nodes, so the default budget allows roughly six cycles before LangGraph considers it runaway. Raising the limit to 100 got me to about 25 loops, around three minutes. That is a ceiling moved, not removed. The loop probably belongs outside the graph entirely, with the graph handling one pass."
+        }
+      ],
+
+      scope: "Solo project, built over about a week. Working: capture, remote captioning, SQLite caption log, the LangGraph loop, and both alert paths. Not built, despite being scoped: LLM-based reasoning (the reasoning node is keyword matching), pattern detection over time (memory is stored and loaded into state but the reasoning step only reads the current caption), MediaPipe pose, and vector-database memory. There is no retry handling, so a failed request or an unreadable frame stops the loop."
     },
 
     {
@@ -249,6 +249,14 @@ const CONTENT = {
       bullets: [
         "Led a team of interns through the full development lifecycle of a Python CLI framework for testing vision model reliability across providers.",
         "Root-caused a model failure to a vision-encoder downsampling threshold rather than model behavior, then validated the fix via controlled replay against archived data."
+      ]
+    },
+    {
+      company: "Eco Illini Supermileage",
+      role: "Electrical Team, Motor Controller PCB",
+      dates: "Aug 2026 – Present",
+      bullets: [
+        "Joined the sub-team designing a custom BLDC motor controller PCB in KiCad, working alongside the firmware team."
       ]
     },
     {
