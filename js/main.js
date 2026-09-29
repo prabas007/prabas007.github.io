@@ -28,10 +28,10 @@ const mark = s => esc(s).replace(/\[PLACEHOLDER[^\]]*\]/gi, m => `<span class="p
 const tags = list => `<div class="tags">${list.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>`;
 
 const mediaBlock = (src, label, cls) => {
-  // A missing file removes the whole block rather than showing an empty frame.
-  if (!src) return '';
+  // A missing file leaves a quiet neutral panel rather than a labelled gap.
+  if (!src) return `<div class="${cls} empty"></div>`;
   return `<div class="${cls}"><img src="${esc(src)}" alt="${esc(label)} demo"
-    onerror="this.closest('.${cls}').remove()"></div>`;
+    onerror="this.closest('.${cls}').classList.add('empty'); this.remove()"></div>`;
 };
 
 /* ======================= HOME PAGE ======================= */
@@ -159,11 +159,11 @@ function renderProject() {
   }
 
   if (p.gallery && p.gallery.length) {
-    blocks.push(`<div class="block" data-prune="gallery"><h2>Build</h2>
+    blocks.push(`<div class="block"><h2>Build</h2>
       <div class="gallery">${p.gallery.map(g => `
         <figure class="shot">
           <div class="shot-img"><img src="${esc(g.src)}" alt="${esc(g.caption)}" loading="lazy"
-            onerror="this.closest('.shot').remove()"></div>
+            onerror="this.closest('.shot-img').classList.add('empty'); this.remove()"></div>
           <figcaption>${mark(g.caption)}</figcaption>
         </figure>`).join('')}</div></div>`);
   }
@@ -192,13 +192,6 @@ function renderProject() {
 
   root.innerHTML = blocks.join('');
 
-  // Remove a section that ended up with nothing in it (all its images missing).
-  const gal = root.querySelector('[data-prune="gallery"]');
-  if (gal) {
-    const check = () => { if (!gal.querySelector('.shot')) gal.remove(); };
-    gal.querySelectorAll('img').forEach(img => img.addEventListener('error', () => setTimeout(check, 0)));
-    setTimeout(check, 1200);
-  }
 
   buildPalette();
 }
