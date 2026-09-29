@@ -59,9 +59,10 @@ function renderHome() {
   $('#proj-count').textContent = String(C.projects.length).padStart(2, '0');
 
   $('#c-projects').innerHTML = C.projects.map(p => `
-    <a class="card" data-cats="${esc((p.categories || []).join(' '))}" href="project.html?p=${encodeURIComponent(p.id)}">
+    <a class="card" href="project.html?p=${encodeURIComponent(p.id)}">
       ${mediaBlock(p.media, p.title, 'card-media')}
       <div class="card-body">
+        ${p.domain ? `<div class="domain">${esc(p.domain)}</div>` : ''}
         <div class="card-top">
           <span class="card-title">${esc(p.title)}</span>
           <span class="card-year">${esc(p.year)}</span>
@@ -73,28 +74,6 @@ function renderHome() {
         <span class="card-cta">Read the write-up &rarr;</span>
       </div>
     </a>`).join('');
-
-  // Category filter chips
-  const catLabel = Object.fromEntries(C.categories.map(c => [c.id, c.label]));
-  const count = id => id === 'all' ? C.projects.length
-    : C.projects.filter(p => (p.categories || []).includes(id)).length;
-  $('#c-filters').innerHTML = C.categories
-    .filter(c => count(c.id) > 0)
-    .map(c => `<button class="chip${c.id === 'all' ? ' on' : ''}" data-cat="${esc(c.id)}">
-      ${esc(c.label)}<span class="chip-n">${count(c.id)}</span></button>`).join('');
-
-  const applyFilter = id => {
-    document.querySelectorAll('#c-filters .chip').forEach(b => b.classList.toggle('on', b.dataset.cat === id));
-    document.querySelectorAll('#c-projects .card').forEach(card => {
-      const cats = card.dataset.cats.split(' ');
-      card.style.display = (id === 'all' || cats.includes(id)) ? '' : 'none';
-    });
-    $('#proj-count').textContent = String(count(id)).padStart(2, '0');
-  };
-  $('#c-filters').addEventListener('click', e => {
-    const b = e.target.closest('.chip');
-    if (b) applyFilter(b.dataset.cat);
-  });
 
   $('#c-exp').innerHTML = C.experience.map(e => `
     <div class="exp-item">
@@ -143,6 +122,7 @@ function renderProject() {
   blocks.push(`
     <a class="back" href="index.html#projects">&larr; all projects</a>
     <div class="p-head">
+      ${p.domain ? `<div class="domain">${esc(p.domain)}</div>` : ''}
       <h1>${esc(p.title)}</h1>
       <div class="p-sub">${esc(p.subtitle)}</div>
       <div class="p-year">${esc(p.year)}</div>

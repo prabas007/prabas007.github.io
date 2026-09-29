@@ -26,21 +26,12 @@ const CONTENT = {
   photo: "assets/photo.jpg",
   photoAlt: "Praneel Baskar",
 
-  /* --- Project filters ---------------------------------------------------- */
-  /* A project can belong to several. Add "categories" to any project.        */
-  categories: [
-    { id: "all",      label: "All" },
-    { id: "software", label: "Software" },
-    { id: "hardware", label: "Hardware & Embedded" },
-    { id: "robotics", label: "Robotics" }
-  ],
-
   /* --- Projects ---------------------------------------------------------- */
   /* Order here = order on the page. Each gets a card + a detail page.       */
   projects: [
     {
       id: "visual-agent",
-      categories: ["software"],
+      domain: "Software · ML",
       title: "Visual Agent",
       subtitle: "Agentic computer-vision system",
       year: "2026",
@@ -93,7 +84,7 @@ const CONTENT = {
 
     {
       id: "bracket-bot",
-      categories: ["robotics", "software"],
+      domain: "Robotics · ML",
       title: "Bracket Bot",
       subtitle: "Self-supervised world model + imitation learning · UIUC SIGRobotics",
       year: "Dec 2025 – Present",
@@ -137,7 +128,7 @@ const CONTENT = {
 
     {
       id: "trainify",
-      categories: ["software"],
+      domain: "Software · ML",
       title: "On-Device Pose Pipeline",
       subtitle: "Computer Vision Intern · Trainify Labs",
       year: "May 2026 – Present",
@@ -180,7 +171,7 @@ const CONTENT = {
 
     {
       id: "drivesafe",
-      categories: ["hardware"],
+      domain: "Hardware · Embedded",
       title: "DriveSafe",
       subtitle: "Speed-adaptive driver distraction detector · ECE 145, team of 3",
       year: "Jan – May 2026",
@@ -242,6 +233,63 @@ const CONTENT = {
       ],
 
       scope: "Course project for ECE 145 with Soham and Sanjit. I owned the FSR hand-detection subcircuit, the tilt detection design, and shared work on the ultrasonic path and final integration. Known limits: wiring organization made debugging harder than it needed to be, and the intended 3D-printed housing was dropped when the ordered wheel never arrived."
+    },
+
+    {
+      id: "linkcare",
+      domain: "Software · Full-Stack",
+      title: "LinkCare",
+      subtitle: "Patient support platform · HackIllinois 2026, team of 4",
+      year: "March 2026",
+      award: "Best Use of Actian VectorAI DB · 3rd Place",
+      hook: "Connects patients with a new diagnosis to people who have been through the same thing, and to the doctors those people actually trusted.",
+      stack: ["Next.js", "React", "FastAPI", "Gemini", "Actian VectorAI", "Whisper", "Modal", "Docker"],
+      media: "assets/linkcare.gif",             // [PLACEHOLDER]
+      repo: "",                                  // [PLACEHOLDER] if public
+      reportUrl: "https://devpost.com/software/linkcare-2fj4ya",
+      reportLabel: "See the Devpost",
+
+      problem: "We built this after a family member got an unexpected diagnosis. What was missing was not medical information, it was the people: nobody at the same stage to talk to, and no trustworthy way to find a specialist other than a search engine. The hard part is matching, because two patients describing the same condition rarely use the same words.",
+
+      built: "Patients describe their condition by voice. Whisper transcribes it on a Modal T4 GPU, Gemini turns the transcript into a 3072-dimensional embedding, and Actian VectorAI retrieves semantically similar patients using HNSW indexing. From there the platform surfaces peers at a comparable stage and the specialists those peers rated well. A three-agent consensus engine produces the recommendation, and a Next.js front end talks to a FastAPI bridge.",
+
+      architecture: [
+        "voice input",
+        "Whisper (Modal GPU)",
+        "Gemini embedding",
+        "VectorAI / HNSW",
+        "3-agent consensus",
+        "peer + doctor match"
+      ],
+      architectureNote: "The multi-agent layer exists for trust rather than accuracy. A single model handing down a confident answer reads as a black box; three agents that disagree and show their reasoning let the patient judge the recommendation for themselves.",
+
+      results: [
+        { label: "Best Use of Actian VectorAI DB", value: "3rd Place", note: "HackIllinois 2026" },
+        { label: "Embedding dimension", value: "3072", note: "Gemini, HNSW-indexed" },
+        { label: "Team", value: "4", note: "built in one weekend" }
+      ],
+
+      challenges: [
+        {
+          title: "The emotion-recognition SDK did not work",
+          body: "The original plan used the PreSage SDK for facial emotion recognition as the input modality. It turned out to be incompatible with our stack partway through the build. We pivoted to voice: Whisper transcription ended up being both more reliable and a better fit, since describing a diagnosis out loud is more natural than being watched by a camera."
+        },
+        {
+          title: "Audio broke between local and serverless",
+          body: "Audio processing behaved differently on a laptop than it did on the serverless GPU environment, so clips that transcribed cleanly in development failed once deployed to Modal. [PLACEHOLDER — add what the actual difference was, sample rate or encoding or file handling, and how you pinned it down.]"
+        },
+        {
+          title: "Vector search needed real tuning",
+          body: "[PLACEHOLDER — the Devpost notes the vector database took significant configuration and debugging. Write what specifically: index parameters, embedding normalization, retrieval quality, whatever it actually was.]"
+        }
+      ],
+
+      scope: "[PLACEHOLDER — say which parts you personally owned. Built with Anish Mehta, Tanish Mittal and Sam Tewari at HackIllinois 2026.]",
+
+      gallery: [
+        { src: "assets/linkcare-award.jpg", caption: "[PLACEHOLDER] Accepting the Actian VectorAI award at HackIllinois 2026" },
+        { src: "assets/linkcare-ui.jpg",    caption: "[PLACEHOLDER] Peer matching view" }
+      ]
     }
   ],
 
