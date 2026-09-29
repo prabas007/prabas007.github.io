@@ -234,8 +234,9 @@ function buildPalette() {
 
   const home = location.pathname.endsWith('project.html') ? 'index.html' : '';
   items = [
-    ...CONTENT.projects.filter(p => !p.noPage).map(p => ({ label: p.title, sub: p.current ? 'in progress' : 'project', href: `project.html?p=${encodeURIComponent(p.id)}` })),
     { label: 'Currently Working On', sub: 'section', href: `${home}#current` },
+    { label: 'Projects',   sub: 'section', href: `${home}#projects` },
+    ...CONTENT.projects.filter(p => !p.noPage).map(p => ({ label: p.title, sub: p.current ? 'in progress' : 'project', href: `project.html?p=${encodeURIComponent(p.id)}` })),
     { label: 'Experience', sub: 'section', href: `${home}#experience` },
     { label: 'Skills',     sub: 'section', href: `${home}#skills` },
     { label: 'About',      sub: 'section', href: `${home}#about` },
