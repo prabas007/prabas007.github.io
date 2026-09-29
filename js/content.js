@@ -40,7 +40,7 @@ const CONTENT = {
       award: "Most Commercializable Award",     // shows as a badge
       hook: "A driver-distraction system built entirely from discrete logic. No microcontroller, no firmware, just 555 timers, comparators, flip-flops and a finite state machine that gets less forgiving the faster you drive.",
       stack: ["555 Timers", "LM311", "CD4029", "74LS153", "74LS74", "CD40106", "HC-SR04", "FSRs"],
-      media: "assets/drivesafe.gif",
+      media: "assets/drivesafe-wheel.jpg",
       repo: "",
       reportUrl: "https://docs.google.com/document/d/10l7Ibyhw_JxpzzuUk1FnDpYIya4wobCspHuAFd-FOSs/edit?usp=sharing",
       reportLabel: "Read the full technical report",
@@ -87,10 +87,9 @@ const CONTENT = {
 
       // Images are hidden until the files exist in assets/.
       gallery: [
-        { src: "assets/drivesafe-wheel.jpg",  caption: "Final wheel: force sensors at the 10 and 2 positions, tilt potentiometer on the axle, buzzer on the center bridge" },
-        { src: "assets/drivesafe-fsm.jpg",    caption: "The finite state machine on breadboard: state register, tolerance counter, and next-state logic" },
-        { src: "assets/drivesafe-scope.jpg",  caption: "Oscilloscope capture showing the synchronized fault signal changing only on clock edges" },
-        { src: "assets/drivesafe-award.jpg",  caption: "Most Commercializable award, ECE 145 final showcase" }
+        { src: "assets/drivesafe-system.jpg", caption: "Force sensors and tilt potentiometer on the wheel, wired into the logic boards" },
+        { src: "assets/drivesafe-fsm.jpg",    caption: "The finite state machine on breadboard: state register, tolerance counter, next-state logic, and speed display" },
+        { src: "assets/drivesafe-award.jpg",  caption: "Most Commercializable Award, ECE 145, Spring 2026" }
       ],
 
       scope: "Course project for ECE 145 with Soham and Sanjit. I owned the FSR hand-detection subcircuit, the tilt detection design, and shared work on the ultrasonic path and final integration. Known limits: wiring organization made debugging harder than it needed to be, and the intended 3D-printed housing was dropped when the ordered wheel never arrived."
@@ -158,7 +157,7 @@ const CONTENT = {
       award: "Best Use of Actian VectorAI DB · 3rd Place",
       hook: "Connects patients with a new diagnosis to people who have been through the same thing, and to the doctors those people actually trusted.",
       stack: ["Next.js", "React", "FastAPI", "Gemini", "Actian VectorAI", "Whisper", "Modal", "Docker"],
-      media: "assets/linkcare.gif",
+      media: "assets/linkcare-team.jpg",
       repo: "",
       reportUrl: "https://devpost.com/software/linkcare-2fj4ya",
       reportLabel: "See the Devpost",
@@ -197,8 +196,7 @@ const CONTENT = {
       scope: "Built over one weekend at HackIllinois 2026 with Anish Mehta, Tanish Mittal and Sam Tewari.",
 
       gallery: [
-        { src: "assets/linkcare-award.jpg", caption: "Accepting the Actian VectorAI award at HackIllinois 2026" },
-        { src: "assets/linkcare-ui.jpg",    caption: "Peer matching view" }
+        { src: "assets/linkcare-award.jpg", caption: "Best Use of Actian VectorAI DB, 3rd place, HackIllinois 2026" }
       ]
     },
 
