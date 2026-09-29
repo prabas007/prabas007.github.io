@@ -67,6 +67,7 @@ function renderHome() {
           <span class="card-year">${esc(p.year)}</span>
         </div>
         <div class="card-sub">${esc(p.subtitle)}</div>
+        ${p.award ? `<div class="award">${esc(p.award)}</div>` : ''}
         <p class="card-hook">${esc(p.hook)}</p>
         ${tags(p.stack)}
         <span class="card-cta">Read the write-up &rarr;</span>
@@ -123,10 +124,13 @@ function renderProject() {
       <h1>${esc(p.title)}</h1>
       <div class="p-sub">${esc(p.subtitle)}</div>
       <div class="p-year">${esc(p.year)}</div>
+      ${p.award ? `<div class="award">${esc(p.award)}</div>` : ''}
       <p class="p-hook">${esc(p.hook)}</p>
       ${tags(p.stack)}
-      ${p.repo ? `<div class="links" style="margin-top:18px">
-        <a href="${esc(p.repo)}" target="_blank" rel="noopener">View source &nearr;</a></div>` : ''}
+      ${(p.repo || p.reportUrl) ? `<div class="links" style="margin-top:18px">
+        ${p.repo ? `<a href="${esc(p.repo)}" target="_blank" rel="noopener">View source &nearr;</a>` : ''}
+        ${p.reportUrl ? `<a href="${esc(p.reportUrl)}" target="_blank" rel="noopener">${esc(p.reportLabel || 'Full report')} &nearr;</a>` : ''}
+      </div>` : ''}
     </div>
     ${mediaBlock(p.media, p.title, 'p-media')}`);
 
@@ -145,10 +149,20 @@ function renderProject() {
     blocks.push(`<div class="block"><h2>Results</h2>
       <div class="results">${p.results.map(r => `
         <div class="result">
-          <div class="result-val">${esc(r.value)}</div>
+          <div class="result-val${String(r.value).length > 12 ? ' long' : ''}">${esc(r.value)}</div>
           <div class="result-lbl">${esc(r.label)}</div>
           ${r.note ? `<div class="result-note">${esc(r.note)}</div>` : ''}
         </div>`).join('')}</div></div>`);
+  }
+
+  if (p.gallery && p.gallery.length) {
+    blocks.push(`<div class="block"><h2>Build</h2>
+      <div class="gallery">${p.gallery.map(g => `
+        <figure class="shot">
+          <div class="shot-img"><img src="${esc(g.src)}" alt="${esc(g.caption)}" loading="lazy"
+            onerror="this.parentNode.innerHTML='<div class=\\'media-ph\\'>[PLACEHOLDER]<br>${esc(g.src)}</div>'"></div>
+          <figcaption>${mark(g.caption)}</figcaption>
+        </figure>`).join('')}</div></div>`);
   }
 
   if (p.challenges && p.challenges.length) {
@@ -158,6 +172,14 @@ function renderProject() {
   }
 
   if (p.scope) blocks.push(`<div class="block"><h2>Scope</h2><p class="scope">${mark(p.scope)}</p></div>`);
+
+  if (p.reportUrl) {
+    blocks.push(`<div class="block"><h2>Full Write-up</h2>
+      <p>Everything above is condensed. The complete report covers every subcircuit,
+      schematic, K-map derivation and oscilloscope verification.</p>
+      <div class="links"><a class="primary" href="${esc(p.reportUrl)}" target="_blank" rel="noopener">
+        ${esc(p.reportLabel || 'Full report')} &nearr;</a></div></div>`);
+  }
 
   // Prev / next
   const i = CONTENT.projects.indexOf(p);

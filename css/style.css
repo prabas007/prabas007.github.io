@@ -231,7 +231,11 @@ footer p { font-family: var(--mono); font-size: 12px; color: var(--text-mute); }
   border: 1px solid var(--border); border-radius: var(--radius);
   padding: 18px 20px; background: var(--surface);
 }
-.result-val { font-size: 26px; font-weight: 600; letter-spacing: -.02em; color: var(--accent); }
+.result-val {
+  font-size: 25px; font-weight: 600; letter-spacing: -.022em; color: var(--accent);
+  line-height: 1.15; overflow-wrap: normal; word-break: keep-all;
+}
+.result-val.long { font-size: 20px; }
 .result-lbl { font-size: 13px; color: var(--text); margin-top: 2px; }
 .result-note { font-size: 12px; color: var(--text-mute); margin-top: 2px; }
 
@@ -287,3 +291,24 @@ footer p { font-family: var(--mono); font-size: 12px; color: var(--text-mute); }
   .exp-dates { margin-left: 0; width: 100%; }
   section { padding: 44px 0; }
 }
+
+/* ---------- Award badge ---------- */
+.award {
+  display: inline-block; font-family: var(--mono); font-size: 11px;
+  padding: 3px 9px; border-radius: 5px; margin-bottom: 10px;
+  color: var(--accent); border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  letter-spacing: .02em;
+}
+.p-head .award { margin-bottom: 16px; }
+
+/* ---------- Image gallery ---------- */
+.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.shot { margin: 0; }
+.shot-img {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface-2); overflow: hidden; aspect-ratio: 4/3;
+  display: grid; place-items: center;
+}
+.shot-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shot figcaption { font-size: 13px; color: var(--text-mute); margin-top: 9px; line-height: 1.5; }

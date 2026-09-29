@@ -169,43 +169,66 @@ const CONTENT = {
     {
       id: "drivesafe",
       title: "DriveSafe",
-      subtitle: "Multi-sensor driver safety system",
-      year: "Jan 2026 – Present",
-      hook: "A finite state machine running on real analog hardware that detects driver distraction at 98% accuracy.",
-      stack: ["555 Timer ICs", "Logic Gates", "FSRs", "Ultrasonic", "FSM"],
-      media: "assets/drivesafe.gif",       // [PLACEHOLDER]
-      repo: "",                            // [PLACEHOLDER]
+      subtitle: "Speed-adaptive driver distraction detector · ECE 145, team of 3",
+      year: "Jan – May 2026",
+      award: "Most Commercializable Award",     // shows as a badge
+      hook: "A driver-distraction system built entirely from discrete logic. No microcontroller, no firmware, just 555 timers, comparators, flip-flops and a finite state machine that gets less forgiving the faster you drive.",
+      stack: ["555 Timers", "LM311", "CD4029", "74LS153", "74LS74", "CD40106", "HC-SR04", "FSRs"],
+      media: "assets/drivesafe.gif",            // [PLACEHOLDER]
+      repo: "",
+      reportUrl: "https://docs.google.com/document/d/10l7Ibyhw_JxpzzuUk1FnDpYIya4wobCspHuAFd-FOSs/edit?usp=sharing",
+      reportLabel: "Read the full technical report",
 
-      problem: "Detecting whether a driver is distracted means fusing several unreliable signals: is their hand on the wheel, where is their head, how close are they to the wheel. Each sensor is noisy and none of them is conclusive alone.",
+      problem: "Distracted driving causes 3,725 deaths and 325,000 injuries annually according to the FCC, usually when a driver looks away from the road or takes their hands off the wheel. Our original design used a microcontroller to handle the ultrasonic sensor. After consultation with the professor we pivoted away from it entirely, which meant every threshold, every timer, and every state transition had to be built in hardware.",
 
-      built: "A finite state machine that fuses force-sensing resistors, ultrasonic ranging, and a potentiometer into manual and visual distraction states. The FSRs are strongly nonlinear, so I calibrated them with inverse power law modeling to reliably distinguish grip states from noise. Distance sensing is done in hardware: 555 timer ICs and logic gates convert ultrasonic trigger and echo timing into usable distance data, with debounce logic tuned on the bench to reject close-range noise.",
+      built: "Three sensors feed one FSM. A force-sensing resistor at each of the 10 and 2 hand positions detects grip, an HC-SR04 ultrasonic sensor confirms the driver is facing forward, and a potentiometer mounted on the steering axle measures wheel tilt. Those combine into a single fault signal, SOFT_FAULT = FSR + EYES + (TILT · S1), where tilt only counts as a fault above 60 mph. The FSM holds three states, OK, WARN and ALARM, and the grace period before the alarm fires shrinks with speed: 4 clock ticks at 20 mph down to 1 at 80, selected by a 4:1 multiplexer off the speed counter bits.",
 
       architecture: [
-        "FSR / ultrasonic / potentiometer",
-        "555 timer + gate logic",
-        "debounce",
-        "FSM state eval",
-        "distraction alert"
+        "FSR / ultrasonic / tilt",
+        "SOFT_FAULT logic",
+        "synchronizer",
+        "tolerance counter",
+        "FSM (OK/WARN/ALARM)",
+        "buzzer"
       ],
-      architectureNote: "Signal conditioning happens in analog hardware before anything reaches the state machine, so the FSM sees clean transitions rather than noisy edges.",
+      architectureNote: "State register is a 74LS74 dual D flip-flop with next-state equations derived from K-maps: D0 = (!Q1·!Q0·FAULT) + (Q0·!TIMEOUT·FAULT) for WARN, and D1 = Q1 + (Q0·TIMEOUT) for ALARM, where the Q1 feedback term latches the alarm until the reset button clears it.",
 
       results: [
-        { label: "Detection accuracy", value: "98%", note: "across tested distraction scenarios" },
-        { label: "Sensors fused", value: "3", note: "FSR, ultrasonic, potentiometer" }
+        { label: "Most Commercializable", value: "Winner", note: "ECE 145 final showcase" },
+        { label: "Sensor inputs", value: "3", note: "grip, head position, wheel tilt" },
+        { label: "Speed tiers", value: "4", note: "20/40/60/80 mph, adaptive tolerance" },
+        { label: "System clock", value: "0.872 Hz", note: "CD40106 RC oscillator, 1.15s per tick" }
       ],
 
       challenges: [
         {
-          title: "Nonlinear force sensors",
-          body: "FSR resistance does not scale linearly with applied force, so a naive threshold could not tell a light grip from a hand resting on the wheel. Modeling the response with an inverse power law gave a mapping that held up across the grip range."
+          title: "The counter wrapped past zero instead of holding",
+          body: "The CD4029 tolerance counter counted down correctly but then rolled over and restarted. Gating it through CARRY OUT did not work because that pulse is too narrow on the CD4029 to keep the counter disabled. The fix was to stop the clock itself: a diode AND gate on the gated-clock path, so COUNTER_CLK = GATED_CLK · CARRY_OUT. Once the count hits zero, CARRY_OUT clamps the clock node low and no further edges reach the counter."
         },
         {
-          title: "Ultrasonic noise at close range",
-          body: "Echo timing became unreliable within a few inches of the sensor, producing phantom readings. Tuned debounce logic through iterative bench testing with a scope until the false transitions disappeared."
+          title: "False timeouts from an asynchronous fault signal",
+          body: "SOFT_FAULT is generated combinationally from the sensors, so it can change in the middle of a clock cycle. When it transitioned near a clock edge the AND gate produced a brief glitch that the counter read as an extra clock edge, jumping straight to timeout. I passed the raw signal through an unused D flip-flop first, so SOFT_FAULT_SYNCED only changes on rising edges. The FSM and load-pulse logic still use raw SOFT_FAULT, so detection latency did not change."
+        },
+        {
+          title: "The counter reloaded forever and never timed out",
+          body: "Tying preset-enable directly to SOFT_FAULT meant the counter reloaded its preset on every tick the fault stayed active, so the countdown never advanced. Detecting the rising edge with a delayed copy of the signal, LOAD_PULSE = SOFT_FAULT · !SOFT_FAULT_DELAYED, produces exactly one load pulse per fault onset."
+        },
+        {
+          title: "A comparator that read correct voltages and still did nothing",
+          body: "The FSR subcircuit would not switch its output LED. Probing with a scope confirmed the FSR itself was modulating voltage correctly, so the sensor was not the problem. Going through the comparator datasheet pin by pin turned up an ungrounded reference pin, which the part needs to establish a 0V reference before it can compare anything. The circuit was also active-low by default, fixed by swapping the FSR and reference potentiometer positions in the divider."
         }
       ],
 
-      scope: ""
+      // [PLACEHOLDER] Add figure images from the report. Drop files in assets/
+      // and fill in real captions. Delete any rows you do not want shown.
+      gallery: [
+        { src: "assets/drivesafe-wheel.jpg",  caption: "[PLACEHOLDER] Final wheel with FSRs at 10 and 2, tilt potentiometer on the axle, buzzer on the center bridge" },
+        { src: "assets/drivesafe-fsm.jpg",    caption: "[PLACEHOLDER] Full FSM implementation on breadboard" },
+        { src: "assets/drivesafe-scope.jpg",  caption: "[PLACEHOLDER] Oscilloscope capture: SOFT_FAULT vs SOFT_FAULT_SYNCED" },
+        { src: "assets/drivesafe-award.jpg",  caption: "[PLACEHOLDER] Most Commercializable award" }
+      ],
+
+      scope: "Course project for ECE 145 with Soham and Sanjit. I owned the FSR hand-detection subcircuit, the tilt detection design, and shared work on the ultrasonic path and final integration. Known limits: wiring organization made debugging harder than it needed to be, and the intended 3D-printed housing was dropped when the ordered wheel never arrived."
     }
   ],
 
