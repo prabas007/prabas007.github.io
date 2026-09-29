@@ -56,9 +56,12 @@ function renderHome() {
     `<a href="mailto:${esc(C.email)}">Email</a>`
   ].join('');
 
-  $('#proj-count').textContent = String(C.projects.length).padStart(2, '0');
+  const featured = C.projects.filter(p => !p.current);
+  const current  = C.projects.filter(p =>  p.current);
 
-  $('#c-projects').innerHTML = C.projects.map(p => `
+  $('#proj-count').textContent = String(featured.length).padStart(2, '0');
+
+  $('#c-projects').innerHTML = featured.map(p => `
     <a class="card" href="project.html?p=${encodeURIComponent(p.id)}">
       ${mediaBlock(p.media, p.title, 'card-media')}
       <div class="card-body">
@@ -75,6 +78,25 @@ function renderHome() {
         <span class="card-cta">Read the write-up &rarr;</span>
       </div>
     </a>`).join('');
+
+  if (current.length) {
+    $('#c-current').innerHTML = current.map(p => {
+      const inner = `
+        <div class="cur-top">
+          <span class="cur-title">${esc(p.title)}</span>
+          <span class="cur-sub">${esc(p.subtitle)}</span>
+          <span class="cur-year">${esc(p.year)}</span>
+        </div>
+        <p class="cur-hook">${esc(p.hook)}</p>
+        ${tags(p.stack)}
+        ${p.noPage ? '' : '<span class="card-cta">Read the write-up &rarr;</span>'}`;
+      return p.noPage
+        ? `<div class="cur-item">${inner}</div>`
+        : `<a class="cur-item" href="project.html?p=${encodeURIComponent(p.id)}">${inner}</a>`;
+    }).join('');
+  } else {
+    $('#current')?.remove();
+  }
 
   $('#c-exp').innerHTML = C.experience.map(e => `
     <div class="exp-item">
@@ -212,7 +234,8 @@ function buildPalette() {
 
   const home = location.pathname.endsWith('project.html') ? 'index.html' : '';
   items = [
-    ...CONTENT.projects.map(p => ({ label: p.title, sub: 'project', href: `project.html?p=${encodeURIComponent(p.id)}` })),
+    ...CONTENT.projects.filter(p => !p.noPage).map(p => ({ label: p.title, sub: p.current ? 'in progress' : 'project', href: `project.html?p=${encodeURIComponent(p.id)}` })),
+    { label: 'Currently Working On', sub: 'section', href: `${home}#current` },
     { label: 'Experience', sub: 'section', href: `${home}#experience` },
     { label: 'Skills',     sub: 'section', href: `${home}#skills` },
     { label: 'About',      sub: 'section', href: `${home}#about` },

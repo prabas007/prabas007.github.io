@@ -204,6 +204,7 @@ const CONTENT = {
       id: "bracket-bot",
       domain: "Robotics · ML",
       wip: true,
+      current: true,
       title: "Bracket Bot",
       subtitle: "Robot learning · UIUC ACM SIGRobotics",
       year: "Dec 2025 – Present",
@@ -226,6 +227,20 @@ const CONTENT = {
       architectureNote: "The contrastive objective is what makes the rest viable. Without it the encoder finds a degenerate solution, mapping every frame to the same point, which satisfies reconstruction while leaving the dynamics model with nothing to learn from.",
 
       scope: "Ongoing group project at UIUC ACM SIGRobotics. The world model is a collaborative effort across several contributors. My current focus is teleoperated data collection on the SO-100 arms and the cloth-folding policy, which is still in progress."
+    },
+
+    {
+      id: "eco-illini",
+      domain: "Electrical · Embedded",
+      wip: true,
+      current: true,
+      noPage: true,
+      title: "Eco Illini Supermileage",
+      subtitle: "Electrical team, motor controller",
+      year: "Aug 2026 – Present",
+      hook: "Working on the firmware side of a custom BLDC motor controller for the team's efficiency vehicle this semester, building toward competition in the spring.",
+      stack: ["STM32", "Embedded C", "BLDC Motor Control", "CAN"],
+      media: ""
     }
   ],
 

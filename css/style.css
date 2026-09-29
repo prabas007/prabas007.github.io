@@ -334,3 +334,20 @@ h1 .wip { font-size: 11px; position: relative; top: -4px; margin-left: 8px; }
 }
 .p-media.empty { min-height: 300px; }
 .card-media.empty { height: 168px; }
+
+/* ---------- Currently working on ---------- */
+.current { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.cur-item {
+  display: block; padding: 20px 22px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--surface);
+  border-left: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  transition: border-color .15s, transform .15s;
+}
+a.cur-item:hover { border-color: var(--border-lt); transform: translateY(-2px); }
+a.cur-item:hover { border-left-color: var(--accent); }
+.cur-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.cur-title { font-weight: 600; color: var(--text); }
+.cur-sub { font-size: 13px; color: var(--text-mute); }
+.cur-year { margin-left: auto; font-size: 12px; color: var(--text-mute); font-family: var(--mono, monospace); }
+.cur-hook { font-size: 14px; color: var(--text-dim); line-height: 1.6; margin-bottom: 12px; }
+.cur-item .card-cta { display: inline-block; margin-top: 10px; }
