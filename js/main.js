@@ -28,10 +28,10 @@ const mark = s => esc(s).replace(/\[PLACEHOLDER[^\]]*\]/gi, m => `<span class="p
 const tags = list => `<div class="tags">${list.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>`;
 
 const mediaBlock = (src, label, cls) => {
-  // If the asset is missing the browser fires onerror and we swap in the placeholder.
-  const ph = `<div class="media-ph">[PLACEHOLDER]<br>drop a demo clip at<br><strong>${esc(src)}</strong></div>`;
+  // A missing file removes the whole block rather than showing an empty frame.
+  if (!src) return '';
   return `<div class="${cls}"><img src="${esc(src)}" alt="${esc(label)} demo"
-    onerror="this.parentNode.innerHTML=${JSON.stringify(ph).replace(/"/g, '&quot;')}"></div>`;
+    onerror="this.closest('.${cls}').remove()"></div>`;
 };
 
 /* ======================= HOME PAGE ======================= */
@@ -45,12 +45,12 @@ function renderHome() {
   document.title = C.name;
 
   // Photo, with graceful fallback to a labelled placeholder
-  $('#c-photo').innerHTML =
-    `<img class="photo" src="${esc(C.photo)}" alt="${esc(C.photoAlt)}"
-      onerror="this.outerHTML='&lt;div class=\\'photo-ph\\'&gt;[PLACEHOLDER]&lt;br&gt;add photo at&lt;br&gt;${esc(C.photo)}&lt;/div&gt;'">`;
+  $('#c-photo').innerHTML = C.photo
+    ? `<img class="photo" src="${esc(C.photo)}" alt="${esc(C.photoAlt)}" onerror="this.remove()">`
+    : '';
 
   $('#c-links').innerHTML = [
-    `<a class="primary" href="${esc(C.resume)}" target="_blank" rel="noopener">Resume</a>`,
+    C.resume ? `<a class="primary" href="${esc(C.resume)}" target="_blank" rel="noopener">Resume</a>` : '',
     `<a href="${esc(C.github)}" target="_blank" rel="noopener">GitHub</a>`,
     `<a href="${esc(C.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`,
     `<a href="mailto:${esc(C.email)}">Email</a>`
@@ -93,13 +93,13 @@ function renderHome() {
     </div>`).join('');
 
   $('#c-about').innerHTML = mark(C.about);
-  $('#c-footer').textContent = C.footer;
+  if (C.footer) $('#c-footer').textContent = C.footer; else $('#c-footer').remove();
   $('#c-footer-links').innerHTML = [
     `<a href="mailto:${esc(C.email)}">Email</a>`,
     `<a href="${esc(C.github)}" target="_blank" rel="noopener">GitHub</a>`,
     `<a href="${esc(C.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`,
-    `<a href="${esc(C.resume)}" target="_blank" rel="noopener">Resume</a>`
-  ].join('');
+    C.resume ? `<a href="${esc(C.resume)}" target="_blank" rel="noopener">Resume</a>` : ''
+  ].filter(Boolean).join('');
 
   buildPalette();
 }
@@ -159,11 +159,11 @@ function renderProject() {
   }
 
   if (p.gallery && p.gallery.length) {
-    blocks.push(`<div class="block"><h2>Build</h2>
+    blocks.push(`<div class="block" data-prune="gallery"><h2>Build</h2>
       <div class="gallery">${p.gallery.map(g => `
         <figure class="shot">
           <div class="shot-img"><img src="${esc(g.src)}" alt="${esc(g.caption)}" loading="lazy"
-            onerror="this.parentNode.innerHTML='<div class=\\'media-ph\\'>[PLACEHOLDER]<br>${esc(g.src)}</div>'"></div>
+            onerror="this.closest('.shot').remove()"></div>
           <figcaption>${mark(g.caption)}</figcaption>
         </figure>`).join('')}</div></div>`);
   }
@@ -191,6 +191,15 @@ function renderProject() {
     <a class="back" href="project.html?p=${encodeURIComponent(nxt.id)}">next: ${esc(nxt.title)} &rarr;</a></div>`);
 
   root.innerHTML = blocks.join('');
+
+  // Remove a section that ended up with nothing in it (all its images missing).
+  const gal = root.querySelector('[data-prune="gallery"]');
+  if (gal) {
+    const check = () => { if (!gal.querySelector('.shot')) gal.remove(); };
+    gal.querySelectorAll('img').forEach(img => img.addEventListener('error', () => setTimeout(check, 0)));
+    setTimeout(check, 1200);
+  }
+
   buildPalette();
 }
 
@@ -214,7 +223,7 @@ function buildPalette() {
     { label: 'Experience', sub: 'section', href: `${home}#experience` },
     { label: 'Skills',     sub: 'section', href: `${home}#skills` },
     { label: 'About',      sub: 'section', href: `${home}#about` },
-    { label: 'Resume',     sub: 'link',    href: CONTENT.resume },
+    ...(CONTENT.resume ? [{ label: 'Resume', sub: 'link', href: CONTENT.resume }] : []),
     { label: 'GitHub',     sub: 'link',    href: CONTENT.github },
     { label: 'LinkedIn',   sub: 'link',    href: CONTENT.linkedin },
     { label: 'Email',      sub: 'link',    href: `mailto:${CONTENT.email}` }

