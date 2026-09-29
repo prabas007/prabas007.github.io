@@ -22,7 +22,7 @@ const CONTENT = {
   linkedin: "https://www.linkedin.com/in/praneel-baskar/",
   // Drop the PDF at assets/resume.pdf, then set this back to "assets/resume.pdf".
   // Empty string hides the Resume button everywhere.
-  resume: "",
+  resume: "assets/resume.pdf",
 
   // Missing file just hides the photo. Drop a square-ish image here.
   photo: "assets/photo.jpg",
