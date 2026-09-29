@@ -92,7 +92,7 @@ h1 {
 .intro { color: var(--text-dim); font-size: 16px; max-width: 58ch; margin-bottom: 28px; }
 
 .photo {
-  width: 150px; height: 150px; border-radius: 14px; object-fit: cover;
+  width: 170px; height: auto; border-radius: 14px; display: block;
   border: 1px solid var(--border); flex-shrink: 0; background: var(--surface-2);
 }
 
