@@ -38,7 +38,7 @@ const CONTENT = {
       hook: "A webcam agent that captions what it sees with Qwen2-VL-7B on a remote H100 and speaks a desktop alert when it catches you on your phone or slouching.",
       stack: ["Python", "OpenCV", "Qwen2-VL-7B", "PyTorch", "LangGraph", "Flask", "ngrok", "SQLite"],
       media: "assets/visual-agent.gif",          // [PLACEHOLDER]
-      repo: "",                                   // [PLACEHOLDER] if you make it public
+      repo: "https://github.com/prabas007/VisualAgent",
 
       problem: "I wanted a 7B vision-language model watching my webcam in a loop, but the H100 I had access to sat behind a university Jupyter service with no SSH and no public port, and VS Code remote returned a 403. The second problem was the model itself: it returns free-form English, not labels, so every downstream decision had to be made from whatever wording came back.",
 
