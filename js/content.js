@@ -9,28 +9,38 @@ const CONTENT = {
   name: "Praneel Baskar",
 
   // The one line that defines you. Shows directly under your name.
-  tagline: "Electrical engineer building robots that see, decide, and act.",
+  tagline: "I build systems that sense, compute, and act, from discrete circuits to on-device ML.",
 
   // Second line, smaller. Current status.
-  status: "EE @ UIUC '28 · robotics, perception, embedded systems",
+  status: "ECE @ UIUC · software, embedded, electrical, robotics",
 
   // Hero paragraph. 2-3 sentences, first person, your actual voice.
-  intro: "I work the whole stack of a robot, from 555 timers and sensor calibration up through imitation-learning policies and on-device inference. Most of what I build starts as a circuit on a breadboard and ends as a model running in real time.",
+  intro: "I like working where hardware meets software. My projects run from analog logic built out of 555 timers and comparators, to computer-vision pipelines running on-device, to learning-based robot manipulation.",
 
   email: "praneelbaskar@gmail.com",
   github: "https://github.com/prabas007",
-  linkedin: "https://www.linkedin.com/in/praneel-baskar",
+  linkedin: "https://www.linkedin.com/in/praneel-baskar/",
   resume: "assets/resume.pdf",            // [PLACEHOLDER] drop your PDF at assets/resume.pdf
 
   // [PLACEHOLDER] drop a square-ish photo at assets/photo.jpg
   photo: "assets/photo.jpg",
   photoAlt: "Praneel Baskar",
 
+  /* --- Project filters ---------------------------------------------------- */
+  /* A project can belong to several. Add "categories" to any project.        */
+  categories: [
+    { id: "all",      label: "All" },
+    { id: "software", label: "Software" },
+    { id: "hardware", label: "Hardware & Embedded" },
+    { id: "robotics", label: "Robotics" }
+  ],
+
   /* --- Projects ---------------------------------------------------------- */
   /* Order here = order on the page. Each gets a card + a detail page.       */
   projects: [
     {
       id: "visual-agent",
+      categories: ["software"],
       title: "Visual Agent",
       subtitle: "Agentic computer-vision system",
       year: "2026",
@@ -83,6 +93,7 @@ const CONTENT = {
 
     {
       id: "bracket-bot",
+      categories: ["robotics", "software"],
       title: "Bracket Bot",
       subtitle: "Self-supervised world model + imitation learning · UIUC SIGRobotics",
       year: "Dec 2025 – Present",
@@ -126,6 +137,7 @@ const CONTENT = {
 
     {
       id: "trainify",
+      categories: ["software"],
       title: "On-Device Pose Pipeline",
       subtitle: "Computer Vision Intern · Trainify Labs",
       year: "May 2026 – Present",
@@ -168,6 +180,7 @@ const CONTENT = {
 
     {
       id: "drivesafe",
+      categories: ["hardware"],
       title: "DriveSafe",
       subtitle: "Speed-adaptive driver distraction detector · ECE 145, team of 3",
       year: "Jan – May 2026",
@@ -266,22 +279,26 @@ const CONTENT = {
   /* --- Skills ------------------------------------------------------------ */
   skills: [
     {
-      group: "Hardware & Controls",
-      items: ["Circuit Design", "555 Timers / Logic Gates", "FSM Logic", "Sensor Integration", "Analog Signal Processing", "Closed-Loop Control", "Fusion360"]
-    },
-    {
-      group: "Perception & ML",
-      items: ["PyTorch", "OpenCV", "YOLO", "CoreML", "Vision-Language Models", "Self-Supervised Learning", "Imitation Learning", "On-Device Inference"]
-    },
-    {
       group: "Software",
       items: ["Python", "C", "Java", "LangGraph", "Flask", "FastAPI", "SQLite", "Git"]
+    },
+    {
+      group: "ML & Perception",
+      items: ["PyTorch", "OpenCV", "YOLO", "CoreML", "Vision-Language Models", "Self-Supervised Learning", "On-Device Inference"]
+    },
+    {
+      group: "Electrical & Embedded",
+      items: ["Analog Circuit Design", "555 Timers / Comparators", "Digital Logic / FSM Design", "Sensor Interfacing", "Oscilloscope Debugging", "Soldering", "Analog Signal Processing"]
+    },
+    {
+      group: "Robotics",
+      items: ["Closed-Loop Control", "Sensor Integration", "Imitation Learning", "World Models", "Fusion360 (CAD)"]
     }
   ],
 
   /* --- About ------------------------------------------------------------- */
   // [PLACEHOLDER] Rewrite this in your own voice. 3-4 sentences.
-  about: "I am a sophomore studying electrical engineering at UIUC. I got here through four years of competitive robotics, where I learned that the interesting problems live at the seam between hardware and software, in the part where a clean control signal meets a noisy sensor. Right now I am most interested in robot learning: how a machine builds a useful model of its own environment and plans inside it. Outside of that I am usually breadboarding something or reading about world models.",
+  about: "I study electrical and computer engineering at UIUC. I got here through years of competitive robotics, where I learned that the interesting problems live at the seam between hardware and software, where a clean control signal meets a noisy sensor. That now spans analog and digital design, computer vision and ML, and robot learning. Outside of class I am usually breadboarding something or building a model.",
 
   // Footer line
   footer: "Built from scratch. No template."
